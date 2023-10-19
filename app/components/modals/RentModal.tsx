@@ -1,15 +1,13 @@
-'use client'
-
+"use client";
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import useRentModal from "@/app/hooks/useRentModal"
+import useRentModal from "@/app/hooks/useRentModal";
 
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
-import Modal from "."
+import Modal from ".";
 import Heading from "../Heading";
-import { categories } from "../navbar/Categories";
 import CategoryInput from "../inputs/CategoryInput";
 import CountrySelect from "../inputs/CountrySelect";
 import dynamic from "next/dynamic";
@@ -18,7 +16,10 @@ import ImageUpload from "../inputs/ImageUpload";
 import Input from "../inputs";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-
+import { getBaseUrl } from "@/app/helpers/config/envConfig";
+import { CurrentUser, petType } from "@/app/types";
+import { useAddListingMutation } from "@/redux/api/listingApi";
+import { useGetPetTypesQuery } from "@/redux/api/petTypeApi";
 
 enum STEPS {
   CATEGORY = 0,
@@ -26,13 +27,15 @@ enum STEPS {
   INFO = 2,
   IMAGES = 3,
   DESCRIPTION = 4,
-  PRICE = 5
+  PRICE = 5,
 }
 
-const RentModal = () => {
-
-  const router = useRouter()
+const RentModal = ({ currentUser }: { currentUser: CurrentUser | null }) => {
+  const router = useRouter();
   const rentModal = useRentModal();
+
+  const [addListing] = useAddListingMutation();
+  const { data: petTypes } = useGetPetTypesQuery({});
 
   const [step, setStep] = useState(STEPS.CATEGORY);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -43,31 +46,31 @@ const RentModal = () => {
     setValue,
     watch,
     formState: { errors },
-    reset
+    reset,
   } = useForm<FieldValues>({
     defaultValues: {
-      category: "",
-      location: null,
-      guestCount: 1,
-      roomCount: 1,
-      bathroomCount: 1,
+      petTypeId: "",
+      locationValue: null,
+      capacity: 1,
       imageSrc: "",
       price: 1,
-      title: '',
-      description: ""
-    }
+      title: "",
+      description: "",
+    },
   });
 
-  const category = watch("category");
-  const location = watch("location");
-  const guestCount = watch("guestCount");
-  const roomCount = watch("roomCount");
-  const bathroomCount = watch("bathroomCount");
+  const category = watch("petTypeId");
+  const location = watch("locationValue");
+  const capacity = watch("capacity");
   const imageSrc = watch("imageSrc");
 
-  const Map = useMemo(() => dynamic(() => import("../Map"), {
-    ssr: false
-  }), [location])
+  const Map = useMemo(
+    () =>
+      dynamic(() => import("../Map"), {
+        ssr: false,
+      }),
+    [location]
+  );
 
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
@@ -75,49 +78,49 @@ const RentModal = () => {
       shouldDirty: true,
       shouldTouch: true,
     });
-  }
+  };
 
   const onBack = () => {
     setStep((value) => value - 1);
-  }
+  };
 
   const onNext = () => {
     setStep((value) => value + 1);
-  }
+  };
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const { locationValue, price, ...rest } = data;
+
     if (step !== STEPS.PRICE) {
       return onNext();
     }
 
     setIsLoading(true);
 
-    axios.post("/api/listings", data)
-      .then(() => {
-
-        toast.success("Listing Created!")
-        router.refresh();
-        reset();
-        setStep(STEPS.CATEGORY);
-        rentModal.onClose();
-
-      })
-      .catch(() => {
-
-        toast.error("Something went wrong!");
-
-      })
-      .finally(() => {
-        setIsLoading(false);
-      })
-  }
+    const result = await addListing({
+      ...rest,
+      locationValue: locationValue?.value,
+      price: parseInt(price),
+    });
+    if (result?.error) {
+      console.error(result?.error?.data);
+      toast.error(result?.error?.data);
+      setIsLoading(false);
+      return;
+    }
+    reset();
+    setStep(STEPS.CATEGORY);
+    rentModal.onClose();
+    toast.success("Hotel Created!");
+    setIsLoading(false);
+  };
 
   const actionLabel = useMemo(() => {
     if (step === STEPS.PRICE) {
-      return "Create"
+      return "Create";
     }
 
-    return "Next"
+    return "Next";
   }, [step]);
 
   const secondaryActionLabel = useMemo(() => {
@@ -134,35 +137,35 @@ const RentModal = () => {
         subtitle="Pick a category"
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
-        {categories.map((item) => (
-          <div key={item.label} className="col-span-1">
+        {petTypes?.map((item: petType) => (
+          <div key={item.id} className="col-span-1">
             <CategoryInput
-              onClick={(category) => setCustomValue('category', category)}
-              selected={category === item.label}
-              label={item.label}
-              icon={item.icon}
+              onClick={(petType) => setCustomValue("petTypeId", item.id)}
+              selected={category === item.id}
+              label={item.typeName}
+              imgSrc={item.imgSrc}
             />
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 
   // Step 2
   if (step === STEPS.LOCATION) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Where is your place lacocated?"
-          subtitle="Help guests find you!"
+          title="Where is your place located?"
+          subtitle="Help pet owner to find you!"
         />
         <CountrySelect
           value={location}
-          onChange={(value) => setCustomValue("location", value)}
+          onChange={(value) => setCustomValue("locationValue", value)}
         />
         <Map center={location?.latlng} />
       </div>
-    )
+    );
   }
 
   // Step 3
@@ -174,27 +177,13 @@ const RentModal = () => {
           subtitle="What amenities do you have?"
         />
         <Counter
-          title="Guests"
-          subtitle="How many guests do you allow?"
-          value={guestCount}
-          onChange={(value) => setCustomValue("guestCount", value)}
-        />
-        <hr />
-        <Counter
-          title="Rooms"
-          subtitle="How many rooms do you have?"
-          value={roomCount}
-          onChange={(value) => setCustomValue("roomCount", value)}
-        />
-        <hr />
-        <Counter
-          title="Bathrooms"
-          subtitle="How many bathrooms do you have?"
-          value={bathroomCount}
-          onChange={(value) => setCustomValue("bathroomCount", value)}
+          title="Pet Capacity"
+          subtitle="How many pets do you allow?"
+          value={capacity}
+          onChange={(value) => setCustomValue("capacity", value)}
         />
       </div>
-    )
+    );
   }
 
   // Step 4
@@ -203,15 +192,14 @@ const RentModal = () => {
       <div className="flex flex-col gap-8">
         <Heading
           title="Add a photo of your place"
-          subtitle="Show guests what your place looks like!"
+          subtitle="Show pet owners what your place looks like!"
         />
         <ImageUpload
           value={imageSrc}
           onChange={(value) => setCustomValue("imageSrc", value)}
-
         />
       </div>
-    )
+    );
   }
 
   // Step 5
@@ -240,10 +228,10 @@ const RentModal = () => {
           required
         />
       </div>
-    )
+    );
   }
 
-  // Step 6 
+  // Step 6
   if (step === STEPS.PRICE) {
     bodyContent = (
       <div className="flex flex-col gap-8">
@@ -262,7 +250,7 @@ const RentModal = () => {
           required
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -273,10 +261,10 @@ const RentModal = () => {
       actionLabel={actionLabel}
       secondaryActionLabel={secondaryActionLabel}
       secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
-      title="Airbnb your home!"
+      title="Add Your Pet hotel!"
       body={bodyContent}
     />
-  )
-}
+  );
+};
 
-export default RentModal
+export default RentModal;

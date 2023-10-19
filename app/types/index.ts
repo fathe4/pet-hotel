@@ -1,24 +1,78 @@
-import { Listing, Reservation, User } from "@prisma/client";
+import { Reservation } from "@prisma/client";
 
-export type SafeListing = Omit<Listing, "createdAt"> & {
-    createdAt: string;
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
+
+export type petType = {
+  id: string;
+  imgSrc: string;
+  typeName: string;
+};
+
+export type SafeListing = {
+  capacity: number;
+  createdAt: string;
+  description: string;
+  id: string;
+  imageSrc: string;
+  locationValue: string;
+  owner: User;
+  ownerId: string;
+  petType: petType;
+  petTypeId: string;
+  price: number;
+  reviews: any[];
+  title: string;
+  totalBooked: number;
 };
 
 export type SafeReservation = Omit<
-    Reservation,
-    "createdAt" | "startDate" | "endDate" | "listing"
+  Reservation,
+  "createdAt" | "startDate" | "endDate" | "listing"
 > & {
-    createdAt: string;
-    startDate: string;
-    endDate: string;
-    listing: SafeListing;
+  createdAt: string;
+  startDate: string;
+  endDate: string;
+  listing: SafeListing;
 };
 
-export type SafeUser = Omit<
-    User,
-    "createdAt" | "updatedAt" | "emailVerified"
-> & {
-    createdAt: string;
-    updatedAt: string;
-    emailVerified: string | null;
+export type SafeUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  profileImg: string;
+  createdAt: string;
+  updatedAt: string;
+  emailVerified: string | null;
+};
+
+export type CurrentUser = SafeUser & {
+  token: string;
+};
+
+export interface IMeta {
+  limit: number;
+  page: number;
+  total: number;
+}
+
+export type ResponseSuccessType = {
+  data: any;
+  meta?: IMeta;
+};
+
+export type IGenericErrorResponse = {
+  statusCode: number;
+  message: string;
+  errorMessages: IGenericErrorMessage[];
+};
+
+export type IGenericErrorMessage = {
+  path: string | number;
+  message: string;
 };

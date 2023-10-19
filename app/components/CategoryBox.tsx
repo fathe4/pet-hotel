@@ -1,71 +1,74 @@
-'use client';
+"use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { FC, useCallback } from "react";
-import { IconType } from "react-icons";
-import qs from 'query-string'
+import qs from "query-string";
+import Image from "next/image";
 
 interface CategoryBoxProps {
-    icon: IconType,
-    label: string;
-    selected?: boolean;
+  id: string;
+  label: string;
+  imgSrc: string;
+  selected?: boolean;
 }
 
+const CategoryBox: FC<CategoryBoxProps> = ({ id, imgSrc, label, selected }) => {
+  const router = useRouter();
+  const params = useSearchParams();
 
-const CategoryBox: FC<CategoryBoxProps> = ({ icon: Icon, label, selected }) => {
+  const handleClick = useCallback(() => {
+    let currentQuery = {};
 
-    const router = useRouter();
-    const params = useSearchParams();
+    if (params) {
+      currentQuery = qs.parse(params.toString());
+    }
 
-    const handleClick = useCallback(() => {
-        let currentQuery = {};
+    const udpatedQuery: any = {
+      ...currentQuery,
+      category: id,
+    };
 
-        if (params) {
-            currentQuery = qs.parse(params.toString());
-        }
+    // If click same category, that category will remove
+    if (params?.get("category") === id) {
+      delete udpatedQuery.category;
+    }
 
-        const udpatedQuery: any = {
-            ...currentQuery,
-            category: label
-        }
+    const url = qs.stringifyUrl(
+      {
+        url: "/",
+        query: udpatedQuery,
+      },
+      { skipNull: true }
+    );
 
-        // If click same category, that category will remove
-        if (params?.get("category") === label) {
-            delete udpatedQuery.category;
-        }
+    router.push(url);
+  }, [label, params, router]);
 
-        const url = qs.stringifyUrl({
-            url: "/",
-            query: udpatedQuery
-        }, { skipNull: true });
-
-        router.push(url);
-
-    }, [label, params, router]);
-
-    return (
-        <div
-            onClick={handleClick}
-            className={`
+  return (
+    <div
+      onClick={handleClick}
+      className={`
           flex 
           flex-col 
           items-center 
           justify-center 
           gap-2
-          p-3
+          px-6
           border-b-2
           hover:text-neutral-800
           transition
           cursor-pointer
-          ${selected ? 'border-b-neutral-800 text-neutral-800' : 'border-transparent text-neutral-500'}
+          ${
+            selected
+              ? "border-b-neutral-800 text-neutral-800"
+              : "border-transparent text-neutral-500"
+          }
         `}
-        >
-            <Icon size={26} />
-            <div className="font-medium text-sm">
-                {label}
-            </div>
-        </div>
-    )
-}
+    >
+      <Image src={imgSrc} width={40} height={40} alt={label} />
+      <div className="font-medium text-sm">{label}</div>
+    </div>
+  );
+};
 
-export default CategoryBox
+export default CategoryBox;
