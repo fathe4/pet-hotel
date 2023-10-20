@@ -24,7 +24,7 @@ const Search = () => {
     return "Anywhere";
   }, [getByValue, locationValue]);
 
-  const guestLabel = useMemo(() => {
+  const petLabel = useMemo(() => {
     if (petCount) {
       return `${petCount} Pets`;
     }
@@ -40,7 +40,7 @@ const Search = () => {
       <div className="flex flex-row items-center justify-between">
         <div className="text-sm font-semibold px-6">{locationLabel}</div>
         <div className="text-sm pl-6 pr-2 text-gray-600 flex flex-row items-center gap-3">
-          <div className="hidden sm:block">{guestLabel}</div>
+          <div className="hidden sm:block">{petLabel}</div>
           <div className="p-2 bg-black rounded-full text-white">
             <BiSearch size={18} />
           </div>

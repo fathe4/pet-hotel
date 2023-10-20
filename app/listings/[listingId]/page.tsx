@@ -6,7 +6,7 @@ import React from "react";
 import ListingClient from "./ListingClient";
 
 export const metadata = {
-  title: "Airbnb | Listings",
+  title: "Pet Hotel | Listings",
 };
 
 interface IParams {

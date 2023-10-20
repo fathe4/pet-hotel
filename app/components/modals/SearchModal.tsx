@@ -62,7 +62,7 @@ const SearchModal = () => {
 
     const url = qs.stringifyUrl(
       {
-        url: "",
+        url: "/",
         query: updatedQuery,
       },
       { skipNull: true }

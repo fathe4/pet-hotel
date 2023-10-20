@@ -1,3 +1,4 @@
+"use client";
 import { IGenericErrorResponse, ResponseSuccessType } from "@/app/types";
 import axios from "axios";
 

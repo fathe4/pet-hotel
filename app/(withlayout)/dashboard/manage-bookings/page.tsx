@@ -35,7 +35,7 @@ const ManageBookings = () => {
       title: "Check-In",
       dataIndex: "checkIn",
       key: "checkIn",
-      render: (text, record) => {
+      render: (text: any, record: any) => {
         const formattedDate = format(
           new Date(record.checkIn),
           "MMMM dd, yyyy HH:mm:ss"
@@ -47,7 +47,7 @@ const ManageBookings = () => {
       title: "Check-Out",
       dataIndex: "checkOut",
       key: "checkOut",
-      render: (text, record) => {
+      render: (text: any, record: any) => {
         const formattedDate = format(
           new Date(record.checkOut),
           "MMMM dd, yyyy HH:mm:ss"
@@ -83,7 +83,7 @@ const ManageBookings = () => {
     {
       title: "Action",
       key: "action",
-      render: function (_, record: any) {
+      render: function (_: any, record: any) {
         return (
           <Space size="middle">
             <Button
@@ -107,9 +107,7 @@ const ManageBookings = () => {
   ];
 
   const handleDelete = async (id: string) => {
-    console.log(id, "id");
-
-    const result = await deleteBook(id);
+    const result: any = await deleteBook(id);
     if (result?.data) {
       toast.success("booking deleted");
     }

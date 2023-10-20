@@ -1,4 +1,3 @@
-import { IMeta } from "@/app/types";
 import { tagTypes } from "../tag-types";
 import { baseApi } from "./baseApi";
 const AUTH_URL = "/auth";
@@ -8,6 +7,14 @@ export const authApi = baseApi.injectEndpoints({
     userLogin: build.mutation({
       query: (loginData) => ({
         url: `${AUTH_URL}/signin`,
+        method: "POST",
+        data: loginData,
+      }),
+      invalidatesTags: [tagTypes.user],
+    }),
+    userRegister: build.mutation({
+      query: (loginData) => ({
+        url: `${AUTH_URL}/signup`,
         method: "POST",
         data: loginData,
       }),
@@ -26,4 +33,8 @@ export const authApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useUserLoginMutation, useGetUserDetailsQuery } = authApi;
+export const {
+  useUserLoginMutation,
+  useGetUserDetailsQuery,
+  useUserRegisterMutation,
+} = authApi;

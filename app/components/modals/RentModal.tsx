@@ -97,7 +97,7 @@ const RentModal = ({ currentUser }: { currentUser: CurrentUser | null }) => {
 
     setIsLoading(true);
 
-    const result = await addListing({
+    const result: any = await addListing({
       ...rest,
       locationValue: locationValue?.value,
       price: parseInt(price),

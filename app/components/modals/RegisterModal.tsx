@@ -15,11 +15,13 @@ import Modal from "./";
 import Input from "../inputs";
 import Heading from "../Heading";
 import Button from "../Button";
+import { useUserRegisterMutation } from "@/redux/api/authApi";
 
 const RegisterModal = () => {
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
+  const [registerUser] = useUserRegisterMutation();
 
   const {
     register,
@@ -33,22 +35,27 @@ const RegisterModal = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const modifiedData = {
+      ...data,
+      contactNo: "",
+      role: "CUSTOMER",
+      address: "",
+      profileImg: "",
+    };
     setIsLoading(true);
+    const result: any = await registerUser(modifiedData);
+    console.log(result, "result");
 
-    axios
-      .post("/api/register", data)
-      .then(() => {
-        toast.success("Registered!");
-        registerModal.onClose();
-        loginModal.onOpen();
-      })
-      .catch((error) => {
-        toast.error(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    if (result?.data) {
+      toast.success("Registered!");
+      registerModal.onClose();
+      loginModal.onOpen();
+    }
+    if (result?.error) {
+      toast.error(result?.error?.data);
+    }
+    setIsLoading(false);
   };
 
   const onToggle = useCallback(() => {
@@ -90,18 +97,6 @@ const RegisterModal = () => {
   const footerContent = (
     <div className="flex flex-col gap-4 mt-3">
       <hr />
-      <Button
-        outline
-        label="Continue with Google"
-        icon={FcGoogle}
-        onClick={() => signIn("google")}
-      />
-      <Button
-        outline
-        label="Continue with Github"
-        icon={AiFillGithub}
-        onClick={() => signIn("github")}
-      />
       <div
         className="
                 text-neutral-500 
@@ -120,7 +115,6 @@ const RegisterModal = () => {
                         hover:underline
                         "
           >
-            {" "}
             Log in
           </span>
         </p>

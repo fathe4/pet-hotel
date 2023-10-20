@@ -1,3 +1,4 @@
+"use client";
 import { IMeta } from "@/app/types";
 import type { BaseQueryFn } from "@reduxjs/toolkit/query";
 import type { AxiosRequestConfig, AxiosError } from "axios";
@@ -21,7 +22,7 @@ export const axiosBaseQuery =
   > =>
   async ({ url, method, data, params, contentType }) => {
     try {
-      const result = await axiosInstance({
+      const result: any = await axiosInstance({
         url: baseUrl + url,
         method,
         data,

@@ -1,4 +1,3 @@
-import { useGetListingsQuery } from "@/redux/api/listingApi";
 import axios from "axios";
 import { getBaseUrl } from "../helpers/config/envConfig";
 

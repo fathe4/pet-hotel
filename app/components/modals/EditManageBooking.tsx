@@ -6,30 +6,30 @@ import { useRouter } from "next/navigation";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 import Modal from ".";
-import Heading from "../Heading";
 
 import Input from "../inputs";
 
-import { useAddPetTypeMutation } from "@/redux/api/petTypeApi";
 import { toast } from "react-hot-toast";
 import {
-  useDeleteBookingMutation,
   useGetBookingQuery,
   useUpdateBookingMutation,
 } from "@/redux/api/bookingApi";
 import useEditBookingModal from "@/app/hooks/UseEditBookingModal";
-import Loader from "../Loader";
 import { Select } from "antd";
+import { useGetUserDetailsQuery } from "@/redux/api/authApi";
 
-const EditBookingModal = ({ bookingId }: { bookingId: string }) => {
+const EditBookingModal = ({ bookingId }: { bookingId: any }) => {
   const router = useRouter();
   const editBookingModal = useEditBookingModal();
   const [updateBook] = useUpdateBookingMutation();
 
+  const query: any = bookingId ? bookingId : {};
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { data: booking, isLoading: isBookingLoading } =
-    useGetBookingQuery(bookingId);
-  const [data, setData] = useState(booking);
+    useGetBookingQuery(query);
+  const { data: user } = useGetUserDetailsQuery(undefined);
+  const [data, setData] = useState<any>(booking);
   const [status, setStatus] = useState(booking);
 
   const {
@@ -49,11 +49,10 @@ const EditBookingModal = ({ bookingId }: { bookingId: string }) => {
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const updatedData = {
       ...data,
-      status,
+      status: status ? status : data?.status,
     };
     setIsLoading(true);
-    const result = await updateBook({ data: updatedData, id: bookingId });
-    console.log(result, "result");
+    const result: any = await updateBook({ data: updatedData, id: bookingId });
 
     if (result?.error) {
       console.error(result?.error?.data);
@@ -79,31 +78,33 @@ const EditBookingModal = ({ bookingId }: { bookingId: string }) => {
         defaultValue={data?.petCount}
         required
       />
-      <Select
-        showSearch
-        placeholder="Select Status"
-        onChange={(value) => setStatus(value)}
-        defaultValue={data?.status}
-        size="large"
-        options={[
-          {
-            value: "pending",
-            label: "Pending",
-          },
-          {
-            value: "confirmed",
-            label: "confirmed",
-          },
-          {
-            value: "cancelled",
-            label: "cancelled",
-          },
-          {
-            value: "completed",
-            label: "completed",
-          },
-        ]}
-      />
+      {["ADMIN", "SUPER_ADMIN"].includes(user?.role) && (
+        <Select
+          showSearch
+          placeholder="Select Status"
+          onChange={(value) => setStatus(value)}
+          defaultValue={data?.status}
+          size="large"
+          options={[
+            {
+              value: "pending",
+              label: "Pending",
+            },
+            {
+              value: "confirmed",
+              label: "confirmed",
+            },
+            {
+              value: "cancelled",
+              label: "cancelled",
+            },
+            {
+              value: "completed",
+              label: "completed",
+            },
+          ]}
+        />
+      )}
     </div>
   );
 

@@ -30,16 +30,14 @@ export const ListingApi = baseApi.injectEndpoints({
       invalidatesTags: [tagTypes.booking],
     }),
     getBookings: build.query({
-      query: (arg: Record<string, any>) => {
+      query: (arg: any) => {
         return {
           url: BOOKING_URL,
           method: "GET",
           params: arg,
         };
       },
-      transformResponse: (response, meta: IMeta) => {
-        return response;
-      },
+
       providesTags: [tagTypes.booking],
     }),
     getBooking: build.query({

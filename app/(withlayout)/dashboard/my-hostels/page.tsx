@@ -1,8 +1,10 @@
 "use client";
 
+import getCurrentUser from "@/app/actions/getCurrentUser";
 import Button from "@/app/components/Button";
 import DataTable from "@/app/components/DataTable";
 import { SafeListing } from "@/app/types";
+import { useGetUserDetailsQuery } from "@/redux/api/authApi";
 import {
   useDeleteListingMutation,
   useGetListingsQuery,
@@ -10,11 +12,13 @@ import {
 import { Space } from "antd";
 import { ColumnsType } from "antd/es/table";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
-const ManageHostels = () => {
-  const query: Record<string, any> = {};
+const MyHotels = () => {
+  const { data: user } = useGetUserDetailsQuery(undefined);
+
+  const query: Record<string, any> = { ownerId: user?.id };
 
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>(10);
@@ -107,4 +111,4 @@ const ManageHostels = () => {
   );
 };
 
-export default ManageHostels;
+export default MyHotels;

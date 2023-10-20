@@ -51,7 +51,7 @@ const CreatePetModal = () => {
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     console.log(data, "data");
     setIsLoading(true);
-    const result = await addPetType(data);
+    const result: any = await addPetType(data);
     console.log(result, "result");
 
     if (result?.error) {

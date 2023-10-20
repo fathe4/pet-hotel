@@ -8,7 +8,7 @@ import Loader from "../Loader";
 
 const { Sider } = Layout;
 
-const SideBar = async () => {
+const SideBar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { data: currentUser, isLoading } = useGetUserDetailsQuery(undefined);
   if (isLoading) {

@@ -70,7 +70,7 @@ const Users: React.FC = () => {
 
   const handleMakeAdmin = async (user: SafeUser) => {
     const data = { role: "ADMIN" };
-    const result = await updateUser({
+    const result: any = await updateUser({
       data,
       userId: user.id,
     });
@@ -80,7 +80,7 @@ const Users: React.FC = () => {
   };
 
   const handleDelete = async (user: SafeUser) => {
-    const result = await deleteUser(user.id);
+    const result: any = await deleteUser(user.id);
     if (result?.data) {
       toast.success("User deleted");
     }

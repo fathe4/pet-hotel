@@ -66,7 +66,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
     }
     setIsLoading(true);
 
-    const result = await reserve({
+    const result: any = await reserve({
       petCount: totalPet,
       totalPrice,
       checkIn: dateRange.startDate,
@@ -80,7 +80,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       return;
     }
 
-    toast.success("Listing reserved!");
+    toast.success("Booked");
     setDateRange(initialDateRange);
     setIsLoading(false);
     router.push("/dashboard/manage-bookings");

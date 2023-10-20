@@ -57,8 +57,11 @@ export const authOptions: AuthOptions = {
       return data;
     },
     async session({ session, token }: { session: any; token: any }) {
-      session = token.token.user;
-      return session;
+      const currentUser = await axios.get(getBaseUrl() + "/users/profile", {
+        headers: { Authorization: token.token.user.token },
+      });
+      session = currentUser.data.data;
+      return { ...session, token: token.token.user.token };
     },
   },
   pages: {

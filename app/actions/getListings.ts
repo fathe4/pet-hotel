@@ -1,4 +1,3 @@
-import prisma from "@/app/libs/prismadb";
 import axios from "axios";
 import { getBaseUrl } from "../helpers/config/envConfig";
 

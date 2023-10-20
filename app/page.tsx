@@ -15,16 +15,12 @@ interface PageProps {
 }
 
 const Page = async ({ searchParams }: PageProps) => {
-  const { data: listings, isLoading } = useGetListingsQuery({
+  const { data: listings }: any = useGetListingsQuery({
     ...searchParams,
     size: process.env.NEXT_PUBLIC_PAGE_SIZE,
   });
 
   const currentUser = await getCurrentUser();
-
-  if (isLoading) {
-    return <Loader />;
-  }
 
   if (listings?.hostels?.length === 0) {
     return (

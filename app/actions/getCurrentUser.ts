@@ -1,8 +1,7 @@
 import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import axios from "axios";
-import { getBaseUrl } from "../helpers/config/envConfig";
+
 import { CurrentUser } from "../types";
 
 export async function getSession() {
@@ -11,24 +10,13 @@ export async function getSession() {
 
 export default async function getCurrentUser(): Promise<CurrentUser | null> {
   try {
-    const session = await getSession();
+    const session: any = await getSession();
 
-    if (!session?.token) {
+    if (!session) {
       return null;
     }
 
-    const currentUser = await axios.get(getBaseUrl() + "/users/profile", {
-      headers: { Authorization: session?.token },
-    });
-
-    if (!currentUser) {
-      return null;
-    }
-
-    return {
-      ...currentUser.data.data,
-      token: session?.token,
-    };
+    return session;
   } catch (error) {
     console.error("Error getting current user:", error);
     return null;
