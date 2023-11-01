@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { differenceInDays, eachDayOfInterval } from "date-fns";
 
 import useLoginModal from "@/app/hooks/useLoginModal";
-import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
+import { SafeListing, SafeUser } from "@/app/types";
 
 import Container from "@/app/components/Container";
 import ListingHead from "@/app/components/listings/ListingHead";
@@ -23,45 +23,26 @@ const initialDateRange = {
 };
 
 interface ListingClientProps {
-  reservations?: SafeReservation[];
   listing: SafeListing & {
     user: SafeUser;
   };
-  currentUser?: SafeUser | null;
 }
 
-const ListingClient: React.FC<ListingClientProps> = ({
-  listing,
-  reservations = [],
-  currentUser,
-}) => {
+const ListingClient: React.FC<ListingClientProps> = ({ listing }) => {
   const loginModal = useLoginModal();
   const router = useRouter();
 
   const [reserve] = useAddBookingMutation();
-
-  const disabledDates = useMemo(() => {
-    let dates: Date[] = [];
-
-    reservations.forEach((reservation: any) => {
-      const range = eachDayOfInterval({
-        start: new Date(reservation.startDate),
-        end: new Date(reservation.endDate),
-      });
-
-      dates = [...dates, ...range];
-    });
-
-    return dates;
-  }, [reservations]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [totalPet, setTotalPet] = useState<number>(1);
   const [totalPrice, setTotalPrice] = useState(listing.price);
   const [dateRange, setDateRange] = useState<Range>(initialDateRange);
 
+  const token = localStorage.getItem("accessToken");
+
   const onCreateReservation = useCallback(async () => {
-    if (!currentUser) {
+    if (!token) {
       return loginModal.onOpen();
     }
     setIsLoading(true);
@@ -84,15 +65,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
     setDateRange(initialDateRange);
     setIsLoading(false);
     router.push("/dashboard/manage-bookings");
-  }, [
-    totalPrice,
-    totalPet,
-    dateRange,
-    listing?.id,
-    router,
-    currentUser,
-    loginModal,
-  ]);
+  }, [totalPrice, totalPet, dateRange, listing?.id, router, token, loginModal]);
 
   useEffect(() => {
     if (dateRange.startDate && dateRange.endDate) {
@@ -112,6 +85,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
         className="
           max-w-screen-lg 
           mx-auto
+          mt-8
         "
       >
         <div className="flex flex-col gap-6">
@@ -120,7 +94,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
             imageSrc={listing.imageSrc}
             locationValue={listing.locationValue}
             id={listing.id}
-            currentUser={currentUser}
           />
           <div
             className="
@@ -149,7 +122,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 dateRange={dateRange}
                 onSubmit={onCreateReservation}
                 disabled={isLoading}
-                disabledDates={disabledDates}
+                disabledDates={[]}
               />
             </div>
           </div>

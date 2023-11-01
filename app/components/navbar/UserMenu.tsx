@@ -31,14 +31,14 @@ const UserMenu: FC<UserMenuProps> = ({ currentUser }) => {
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
   }, []);
-
+  const token = localStorage.getItem("accessToken");
   const onRent = useCallback(() => {
-    if (!currentUser) {
+    if (!token) {
       return loginModal.onOpen();
     }
 
     rentModal.onOpen();
-  }, [currentUser, loginModal]);
+  }, [token, loginModal]);
 
   return (
     <div className="relative">
@@ -55,14 +55,14 @@ const UserMenu: FC<UserMenuProps> = ({ currentUser }) => {
         >
           <AiOutlineMenu />
           <div className="hidden md:block">
-            <Avatar src={currentUser?.profileImg} />
+            <Avatar />
           </div>
         </div>
       </div>
       {isOpen && (
         <div className="absolute rounded-xl shadow-md w-[40vw] md:w-3/4 bg-white overflow-hidden right-0 top-12 text-sm">
           <div className="flex flex-col cursor-pointer">
-            {!currentUser ? (
+            {!token ? (
               <>
                 <MenuItem onClick={loginModal.onOpen} label="Login" />
                 <MenuItem onClick={registerModal.onOpen} label="Sign up" />
@@ -87,7 +87,13 @@ const UserMenu: FC<UserMenuProps> = ({ currentUser }) => {
                 /> */}
                 <MenuItem onClick={() => onRent()} label="Add Your Hotel" />
                 <hr />
-                <MenuItem onClick={() => signOut()} label="Logout" />
+                <MenuItem
+                  onClick={() => {
+                    signOut();
+                    localStorage.removeItem("accessToken");
+                  }}
+                  label="Logout"
+                />
               </>
             )}
           </div>

@@ -17,7 +17,7 @@ import Input from "../inputs";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { getBaseUrl } from "@/app/helpers/config/envConfig";
-import { CurrentUser, petType } from "@/app/types";
+import { petType } from "@/app/types";
 import { useAddListingMutation } from "@/redux/api/listingApi";
 import { useGetPetTypesQuery } from "@/redux/api/petTypeApi";
 
@@ -30,7 +30,7 @@ enum STEPS {
   PRICE = 5,
 }
 
-const RentModal = ({ currentUser }: { currentUser: CurrentUser | null }) => {
+const RentModal = () => {
   const router = useRouter();
   const rentModal = useRentModal();
 

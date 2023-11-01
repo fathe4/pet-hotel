@@ -17,8 +17,6 @@ interface ImageUploadProps {
 const ImageUpload: FC<ImageUploadProps> = ({ onChange, value }) => {
   const handleUpload = useCallback(
     (result: any) => {
-      console.log(result, "res");
-
       onChange(result.info.secure_url);
     },
     [onChange]

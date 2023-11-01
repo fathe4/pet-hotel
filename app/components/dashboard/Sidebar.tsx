@@ -5,18 +5,22 @@ import { Layout, Menu } from "antd";
 import { sidebarItems } from "@/constants/sidebaritems";
 import { useGetUserDetailsQuery } from "@/redux/api/authApi";
 import Loader from "../Loader";
+import { Nunito } from "next/font/google";
+import { Session } from "@/app/types";
+import useLoginModal from "@/app/hooks/useLoginModal";
 
 const { Sider } = Layout;
 
-const SideBar = () => {
+const font = Nunito({
+  subsets: ["latin"],
+});
+
+const SideBar = ({ currentUser }: { currentUser: Session }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const { data: currentUser, isLoading } = useGetUserDetailsQuery(undefined);
-  if (isLoading) {
-    return <Loader />;
-  }
 
   return (
     <Sider
+      className={font.className}
       collapsible
       collapsed={collapsed}
       onCollapse={(value) => setCollapsed(value)}
@@ -31,6 +35,7 @@ const SideBar = () => {
       }}
     >
       <Menu
+        className={`font-semibold`}
         theme="dark"
         defaultSelectedKeys={["1"]}
         mode="inline"

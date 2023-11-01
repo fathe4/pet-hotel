@@ -3,7 +3,6 @@ import { Nunito } from "next/font/google";
 import "./globals.css";
 
 import ToastProvider from "./providers/ToasterProvider";
-import getCurrentUser from "./actions/getCurrentUser";
 // Components
 import Navbar from "./components/navbar";
 import ClientOnly from "./components/ClientOnly";
@@ -13,6 +12,9 @@ import LoginModal from "./components/modals/LoginModal";
 import RentModal from "./components/modals/RentModal";
 import SearchModal from "./components/modals/SearchModal";
 import StyledComponentsRegistry from "@/lib/AntdRegistry";
+import NextAuthProvider from "./providers/NextAuthProvider";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
 export const metadata = {
   title: "Pet Hotel | Home",
@@ -33,7 +35,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const currentUser = await getCurrentUser();
+  const currentUser: any = await getServerSession(authOptions);
 
   return (
     <html lang="en">
@@ -43,10 +45,10 @@ export default async function RootLayout({
             <ToastProvider />
             <RegisterModal />
             <LoginModal />
-            <RentModal currentUser={currentUser} />
+            <RentModal />
             <SearchModal />
             <Navbar currentUser={currentUser} />
-            <div className="pb-20 pt-28">{children}</div>
+            <div className="pt-20">{children}</div>
           </StyledComponentsRegistry>
         </ClientOnly>
       </body>

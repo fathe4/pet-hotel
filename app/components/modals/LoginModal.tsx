@@ -35,10 +35,9 @@ const LoginModal = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
-
-    signIn("credentials", {
+    signIn("username-login", {
       ...data,
       redirect: false,
     }).then((callback) => {

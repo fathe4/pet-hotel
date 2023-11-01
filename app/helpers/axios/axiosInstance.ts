@@ -1,6 +1,7 @@
 "use client";
 import { IGenericErrorResponse, ResponseSuccessType } from "@/app/types";
 import axios from "axios";
+// import { useSession } from "next-auth/react";
 
 const instance = axios.create();
 instance.defaults.headers.post["Content-Type"] = "application/json";
@@ -10,6 +11,9 @@ instance.defaults.timeout = 60000;
 // Add a request interceptor
 instance.interceptors.request.use(
   function (config) {
+    // const { data: session, status } = useSession();
+    // console.log(session, "session from axios");
+
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
       config.headers.Authorization = accessToken;

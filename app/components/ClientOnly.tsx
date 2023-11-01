@@ -2,11 +2,10 @@
 import { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
-import { CurrentUser, SafeUser } from "../types";
 
 interface ClientOnlyProps {
   children: React.ReactNode;
-  currentUser?: CurrentUser | null;
+  currentUser?: any;
 }
 
 const ClientOnly: React.FC<ClientOnlyProps> = ({ children, currentUser }) => {
@@ -19,15 +18,14 @@ const ClientOnly: React.FC<ClientOnlyProps> = ({ children, currentUser }) => {
   if (!hasMounted) {
     return null;
   }
-  if (currentUser?.token) {
-    localStorage.setItem("accessToken", currentUser?.token);
+
+  if (currentUser) {
+    localStorage.setItem("accessToken", currentUser);
   }
 
   return (
     <div>
-      {/* <SessionProvider session={session}> */}
       <Provider store={store}>{children}</Provider>
-      {/* </SessionProvider> */}
     </div>
   );
 };

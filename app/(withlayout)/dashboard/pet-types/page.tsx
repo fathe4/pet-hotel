@@ -73,10 +73,12 @@ const PetTypes = () => {
 
   const handleDelete = async (id: string) => {
     const result: any = await deletePetType(id);
-    if (result?.data) {
-      return toast.success("Deleted Pet type");
-    }
-    toast.error(result?.error);
+    console.log(result);
+
+    // if (result?.data) {
+    //   return toast.success("Deleted Pet type");
+    // }
+    // toast.error(result?.error);
   };
 
   return (

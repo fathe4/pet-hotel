@@ -1,10 +1,17 @@
-import { Reservation } from "@prisma/client";
-
-export type User = {
+export interface User {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role: "ADMIN" | "USER" | "SUPER_ADMIN";
+  contactNo: string;
+  address: string;
+  profileImg: string;
+  createdAt: string;
+  token: string;
+}
+
+export type Session = User & {
+  token: string;
 };
 
 export type petType = {
@@ -28,16 +35,6 @@ export type SafeListing = {
   reviews: any[];
   title: string;
   totalBooked: number;
-};
-
-export type SafeReservation = Omit<
-  Reservation,
-  "createdAt" | "startDate" | "endDate" | "listing"
-> & {
-  createdAt: string;
-  startDate: string;
-  endDate: string;
-  listing: SafeListing;
 };
 
 export type SafeUser = {

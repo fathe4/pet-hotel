@@ -5,14 +5,14 @@ import { FC, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import useCountries from "@/app/hooks/useCountries";
 
-import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
+import { SafeListing, SafeUser } from "@/app/types";
 import { format } from "date-fns";
 import Image from "next/image";
 import Button from "../Button";
 
 interface ListingCardProps {
   data: SafeListing;
-  reservation?: SafeReservation;
+  reservation?: any;
   onAction?: (id: string) => void;
   disabled?: boolean;
   actionLabel?: string;

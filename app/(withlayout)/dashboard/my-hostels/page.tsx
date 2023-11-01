@@ -1,6 +1,5 @@
 "use client";
 
-import getCurrentUser from "@/app/actions/getCurrentUser";
 import Button from "@/app/components/Button";
 import DataTable from "@/app/components/DataTable";
 import { SafeListing } from "@/app/types";

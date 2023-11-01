@@ -27,6 +27,7 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
     CredentialsProvider({
+      id: "username-login",
       name: "credentials",
       credentials: {
         email: { label: "email", type: "text" },
@@ -38,17 +39,12 @@ export const authOptions: AuthOptions = {
         }
         const baseUrl = getBaseUrl();
 
-        try {
-          const response = await axios.post(baseUrl + "/auth/signin", {
-            email: credentials.email,
-            password: credentials.password,
-          });
+        const response = await axios.post(baseUrl + "/auth/signin", {
+          email: credentials.email,
+          password: credentials.password,
+        });
 
-          return response.data;
-        } catch (error: any) {
-          console.error(error.response);
-          throw new Error(error.response.data.message);
-        }
+        return response?.data;
       },
     }),
   ],
@@ -58,10 +54,11 @@ export const authOptions: AuthOptions = {
     },
     async session({ session, token }: { session: any; token: any }) {
       const currentUser = await axios.get(getBaseUrl() + "/users/profile", {
-        headers: { Authorization: token.token.user.token },
+        headers: { Authorization: token?.token?.user?.token },
       });
-      session = currentUser.data.data;
-      return { ...session, token: token.token.user.token };
+
+      session = currentUser?.data?.data;
+      return { ...session, token: token?.token?.user?.token };
     },
   },
   pages: {
@@ -71,6 +68,7 @@ export const authOptions: AuthOptions = {
   session: {
     strategy: "jwt",
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default NextAuth(authOptions);
