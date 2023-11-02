@@ -20,7 +20,7 @@ const ClientOnly: React.FC<ClientOnlyProps> = ({ children, currentUser }) => {
   }
 
   if (currentUser) {
-    localStorage.setItem("accessToken", currentUser);
+    localStorage.setItem("accessToken", currentUser.token);
   }
 
   return (
